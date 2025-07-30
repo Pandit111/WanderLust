@@ -7,101 +7,110 @@ const MONGO_URL = process.env.MONGO_URL;
 
 const Listing = require("./models/listing.js");
 const path = require("path");
-const methodOverride = require("method-override"); 
+const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 
-main().then(() => {
-    console.log("connected to DB");
-}) .catch(err => {
+main()
+  .then(() => {
+    console.log("✅ connected to DB");
+  })
+  .catch((err) => {
     console.log(err);
-});
+  });
 
 async function main() {
-    await mongoose.connect(MONGO_URL);
+  await mongoose.connect(MONGO_URL);
 }
-app.set("view engine","ejs");
-app.set("views", path.join(__dirname,"views"));
-app.use(express.urlencoded({extended:true}));
-app.use(methodOverride("_method"));
-app.engine('ejs', ejsMate);
-app.use(express.static(path.join(__dirname,"/public")));
 
-// Redirect root to listings
+// Set up view engine and middleware
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.engine("ejs", ejsMate);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
+app.use(express.static(path.join(__dirname, "/public")));
+
+// Root route
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
 
-// index route
+// INDEX route
 app.get("/listings", async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index", { allListings }); // ✅ Correct way
- });
+  const allListings = await Listing.find({});
+  res.render("listings/index", { allListings });
+});
 
+// NEW route
+app.get("/listings/new", (req, res) => {
+  res.render("listings/new.ejs");
+});
 
+// CREATE route
+app.post("/listings", async (req, res) => {
+  const { title, description, price, location, country, image } = req.body.listing;
 
- //new route
- app.get("/listings/new", (req, res )=> {
-    res.render("listings/new.ejs");
- });
+  const newListing = new Listing({
+    title,
+    description,
+    price,
+    location,
+    country,
+    image: {
+      filename: image.filename || "listingimage",
+      url: image.url
+    }
+  });
 
- //show route
-
- app.get("/listings/:id", async (req, res) => {
-    let {id} = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/show.ejs", {listing });
- });
- 
- //create route
-
- app.post("/listings", async (req, res) => {
-   const newListing = new Listing(req.body.listing);
   await newListing.save();
-    res.redirect("/listings");
-
- });
-
- //edit route
-
- app.get("/listings/:id/edit", async (req, res) =>{
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/edit.ejs",{listing});
-
- });
-
- //update route
- app.put("/listings/:id", async (req, res ) => {
-    let { id } = req.params;
-   await Listing. findByIdAndUpdate(id, {...req.body.listing});
-   res.redirect(`/listings/${id}`);
- });
-
- //Delete route
-
- app.delete ("/listings/:id", async (req , res)  =>{
-    let { id } = req.params;
-   let deletedListing = await Listing.findByIdAndDelete(id);
-   console.log(deletedListing);
-   res.redirect("/listings");
- });
-app.get("/testlisting", async (req, res) => {
-    let sampleListing = new Listing({
-        title: "Test Home",
-        description: "A simple test listing",
-        price: 999,
-        location: "Goa",
-        country: "India",
-        image: "https://placehold.co/600x400"
-    });
-    await sampleListing.save();
-    res.send("Sample listing created");
-    
+  res.redirect("/listings");
 });
 
 
+// SHOW route
+app.get("/listings/:id", async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listings/show.ejs", { listing });
+});
+
+// EDIT route
+app.get("/listings/:id/edit", async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+  res.render("listings/edit.ejs", { listing });
+});
+
+// UPDATE route
+app.put("/listings/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, price, location, country, image } = req.body.listing;
+
+  await Listing.findByIdAndUpdate(id, {
+    title,
+    description,
+    price,
+    location,
+    country,
+    image: {
+      filename: image.filename || "listingimage",
+      url: image.url
+    }
+  });
+
+  res.redirect(`/listings/${id}`);
+});
+
+
+// DELETE route
+app.delete("/listings/:id", async (req, res) => {
+  const { id } = req.params;
+  await Listing.findByIdAndDelete(id);
+  res.redirect("/listings");
+});
+
+// Server
 app.listen(process.env.PORT || 8080, () => {
-  console.log(`✅ Server is running on port ${process.env.PORT || 8080}`);
+  console.log(`🚀 Server is running on port ${process.env.PORT || 8080}`);
 });
-
-
