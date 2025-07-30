@@ -85,18 +85,18 @@ app.get("/listings", async (req, res) => {
    console.log(deletedListing);
    res.redirect("/listings");
  });
-app.get("/testlisting",async (req,  res) =>{
+app.get("/testlisting", async (req, res) => {
     let sampleListing = new Listing({
-        title: "My New Villa",
-       description: "By The beach",
-        price: 12000,
-        location: "calungate,Goa",
-         country: "india",
-     });
+        title: "Test Home",
+        description: "A simple test listing",
+        price: 999,
+        location: "Goa",
+        country: "India",
+        image: "https://placehold.co/600x400"
+    });
     await sampleListing.save();
-    console.log("sample was saved");
-    res.send("Succesfull testing");
-
+    res.send("Sample listing created");
+});
 
 
 app.listen(process.env.PORT || 8080, () => {
