@@ -85,17 +85,17 @@ app.get("/listings", async (req, res) => {
    console.log(deletedListing);
    res.redirect("/listings");
  });
-// app.get("/testlisting",async (req,  res) =>{
-//     let sampleListing = new Listing({
-//         title: "My New Villa",
-//         description: "By The beach",
-//         price: 12000,
-//         location: "calungate,Goa",
-//         country: "india",
-//     });
-//    await sampleListing.save();
-//    console.log("sample was saved");
-//    res.send("Succesfull testing");
+app.get("/testlisting",async (req,  res) =>{
+    let sampleListing = new Listing({
+        title: "My New Villa",
+       description: "By The beach",
+        price: 12000,
+        location: "calungate,Goa",
+         country: "india",
+     });
+    await sampleListing.save();
+    console.log("sample was saved");
+    res.send("Succesfull testing");
 
 
 
