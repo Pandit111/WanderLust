@@ -1,7 +1,10 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+const MONGO_URL = process.env.MONGO_URL;
+
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override"); 
@@ -96,7 +99,8 @@ app.get("/listings", async (req, res) => {
 
 
 
-app.listen(8080, () => {
-    console.log("✅ Server is running on port 8080");
+app.listen(process.env.PORT || 8080, () => {
+  console.log(`✅ Server is running on port ${process.env.PORT || 8080}`);
 });
+
 
