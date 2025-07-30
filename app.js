@@ -23,9 +23,11 @@ app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
 
+// Redirect root to listings
 app.get("/", (req, res) => {
-    res.send("Hi, I am root");
-}); 
+  res.redirect("/listings");
+});
+
 // index route
 app.get("/listings", async (req, res) => {
     const allListings = await Listing.find({});
