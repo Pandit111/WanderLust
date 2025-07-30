@@ -96,6 +96,7 @@ app.get("/testlisting", async (req, res) => {
     });
     await sampleListing.save();
     res.send("Sample listing created");
+    
 });
 
 
